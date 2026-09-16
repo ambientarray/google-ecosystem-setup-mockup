@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Google Ecosystem Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#eef2f2; --surface:#ffffff; --surface-2:#f6f9f9; --ink:#0c1f24; --muted:#4a6067;
+  --line:#d6e0e0; --brand:#044855; --brand-2:#0a6b7d; --accent:#84cecf; --accent-ink:#03363f;
+  --good:#2e7d5b; --good-bg:#e2f1ea; --warn:#a86a10; --warn-bg:#f7eddb; --crit:#b3402f; --crit-bg:#f6e2de;
+  --radius:14px; --shadow:0 1px 2px rgba(4,72,85,.06),0 8px 24px rgba(4,72,85,.07);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#08171b; --surface:#0f2429; --surface-2:#0c1e22; --ink:#e7f0f0; --muted:#9fb6b9;
+  --line:#1e3a40; --brand:#84cecf; --brand-2:#5fb6ba; --accent:#84cecf; --accent-ink:#03282e;
+  --good:#5cc394; --good-bg:#123128; --warn:#e0aa4e; --warn-bg:#33280f; --crit:#e08472; --crit-bg:#361c17;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --ground:#08171b; --surface:#0f2429; --surface-2:#0c1e22; --ink:#e7f0f0; --muted:#9fb6b9;
+  --line:#1e3a40; --brand:#84cecf; --brand-2:#5fb6ba; --accent:#84cecf; --accent-ink:#03282e;
+  --good:#5cc394; --good-bg:#123128; --warn:#e0aa4e; --warn-bg:#33280f; --crit:#e08472; --crit-bg:#361c17;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;text-wrap:balance;margin:0;line-height:1.08;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--brand-2)}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-2)}
+.mono{font-family:"IBM Plex Mono",monospace}
+.btn{display:inline-flex;align-items:center;gap:.5em;border:0;border-radius:999px;padding:.72em 1.3em;font:inherit;font-weight:600;cursor:pointer;background:var(--brand);color:#fff;text-decoration:none}
+[data-theme="dark"] .btn, :root:not([data-theme="light"]) .btn{color:#04232a}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.block{width:100%;justify-content:center}
+.pill{display:inline-flex;align-items:center;gap:.4em;font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:500;padding:.25em .6em;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good);border-color:transparent}
+.pill.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.pill.crit{background:var(--crit-bg);color:var(--crit);border-color:transparent}
+.dot{width:.5em;height:.5em;border-radius:50%;background:currentColor}
+/* top bar + switcher */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ground) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.brandmark{display:flex;align-items:center;gap:9px;font-family:"Bricolage Grotesque";font-weight:800;letter-spacing:-.02em}
+.brandmark .sq{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.brandmark .sq i{width:8px;height:8px;background:var(--accent);border-radius:2px}
+.brandmark .sq i:nth-child(2),.brandmark .sq i:nth-child(3){background:var(--brand-2)}
+.tabs{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;color:var(--muted);font:inherit;font-size:.86rem;font-weight:600;padding:.5em .8em;border-radius:9px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.ribbon{background:var(--brand);color:#fff;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:.4em}
+[data-theme="dark"] .ribbon,:root:not([data-theme="light"]) .ribbon{color:#04232a}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .ribbon{color:#fff}}
+.screen{padding-block:44px 72px}
+.screen[hidden]{display:none}
+.screen-note{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:.5em .8em;margin-bottom:26px}
+/* landing */
+.hero{display:grid;gap:22px;padding:14px 0 30px}
+.hero h1{font-size:clamp(2.1rem,5.5vw,3.5rem);font-weight:700}
+.hero .lede{font-size:1.15rem;color:var(--muted);max-width:60ch}
+.partner-banner{display:flex;gap:10px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:.7em 1em;font-size:.9rem}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.section{padding-block:34px;border-top:1px solid var(--line)}
+.section h2{font-size:1.5rem;margin-bottom:6px}
+.section .sub{color:var(--muted);margin-bottom:22px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.step .n{font-family:"IBM Plex Mono",monospace;color:var(--brand-2);font-size:.8rem}
+.step h3{font-size:1rem;margin:.3em 0}
+.step p{font-size:.85rem;color:var(--muted)}
+.prices{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.price{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow)}
+.price.pro{border-color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 40%,transparent);position:relative}
+.price .tag{position:absolute;top:-11px;right:18px;background:var(--accent);color:var(--accent-ink);font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.25em .7em;border-radius:999px}
+.price .amt{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.4rem;letter-spacing:-.02em}
+.price .amt small{font-size:.9rem;color:var(--muted);font-weight:500}
+.price ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:.9rem}
+.price li{display:flex;gap:.6em;align-items:flex-start}
+.price li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border-radius:5px;background:var(--accent);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/70% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/70% no-repeat}
+.addons{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.addon{font-size:.82rem;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:.5em .8em}
+.faq{display:grid;gap:2px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.2em .2em}
+.faq summary{cursor:pointer;padding:.85em 1em;font-weight:600;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq p{padding:0 1em 1em;color:var(--muted);font-size:.9rem}
+/* forms */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}
+.narrow{max-width:640px}
+.field{display:grid;gap:6px;margin-bottom:16px}
+.field label{font-size:.82rem;font-weight:600}
+.field .hint{font-size:.78rem;color:var(--muted)}
+.field input,.field select,.field textarea{font:inherit;padding:.6em .7em;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);color:var(--ink)}
+.field textarea{min-height:88px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{display:flex;align-items:center;gap:.45em;font-size:.86rem;border:1px solid var(--line);border-radius:9px;padding:.5em .8em;background:var(--surface-2);cursor:pointer}
+fieldset{border:0;margin:0;padding:0}
+.consent-box{max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:9px;padding:14px;background:var(--surface-2);font-size:.83rem;color:var(--muted);margin-bottom:16px}
+/* order status */
+.status-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.track{display:grid;gap:0}
+.track .node{display:grid;grid-template-columns:26px 1fr;gap:14px;padding-bottom:20px;position:relative}
+.track .node:not(:last-child)::before{content:"";position:absolute;left:12px;top:26px;bottom:0;width:2px;background:var(--line)}
+.track .node .mk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;background:var(--surface);font-size:.7rem;color:var(--muted);z-index:1}
+.track .node.done .mk{background:var(--brand);border-color:var(--brand);color:#fff}
+.track .node.now .mk{border-color:var(--accent);color:var(--accent-ink);background:var(--accent)}
+.track .node h3{font-size:.98rem}
+.track .node p{font-size:.85rem;color:var(--muted)}
+.callout{display:flex;gap:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;margin:8px 0 4px}
+.callout .mono{font-size:.82rem}
+/* staff table */
+.toolbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .k{font-size:.76rem;color:var(--muted)}
+.stat .v{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.7rem}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:.87rem}
+th{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+td .mono{font-size:.82rem}
+.sla{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:.82rem}
+.detail{display:grid;grid-template-columns:1fr;gap:16px;margin-top:22px}
+.panelgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.plan-item{display:flex;justify-content:space-between;gap:10px;padding:.5em 0;border-bottom:1px dashed var(--line);font-size:.86rem}
+.plan-item:last-child{border-bottom:0}
+.foot{color:var(--muted);font-size:.82rem;text-align:center;padding:30px 0;border-top:1px solid var(--line)}
+@media(max-width:780px){
+  .steps{grid-template-columns:1fr 1fr}
+  .prices,.grid2,.panelgrid,.stat-row{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+</style>
+</head>
+<body>
+
+
+<div class="ribbon">Mockup for review &nbsp;&middot;&nbsp; Ambient Array Google Ecosystem Setup &nbsp;&middot;&nbsp; not live, example data</div>
+<header class="topbar">
+  <div class="wrap">
+    <div class="brandmark"><span class="sq"><i></i><i></i><i></i><i></i></span> Ambient&nbsp;Array</div>
+    <div class="tabs" role="tablist" aria-label="Screens">
+      <button class="tab" role="tab" aria-selected="true" data-s="landing">Landing</button>
+      <button class="tab" role="tab" aria-selected="false" data-s="start">Get started</button>
+      <button class="tab" role="tab" aria-selected="false" data-s="status">Order status</button>
+      <button class="tab" role="tab" aria-selected="false" data-s="intake">Intake</button>
+      <button class="tab" role="tab" aria-selected="false" data-s="consent">Consent</button>
+      <button class="tab" role="tab" aria-selected="false" data-s="staff">Staff</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- LANDING -->
+<section class="screen" id="landing">
+  <div class="wrap">
+    <div class="hero">
+      <span class="eyebrow">Google Tag Manager + GA4, done right</span>
+      <h1>Get the conversions you care about tracked, in days, not quarters.</h1>
+      <p class="lede">Tell us what a win looks like on your site. We plan the tags, build them in your Google Tag Manager, wire up GA4, and you approve every change before it goes live. No tag soup, no guesswork.</p>
+      <div class="partner-banner"><span class="pill good"><span class="dot"></span>Partner access</span><span>Currently open to Ambient Array agency partners and invited clients.</span></div>
+      <div class="cta-row">
+        <a class="btn" href="#" data-go="start">Check eligibility and start</a>
+        <a class="btn ghost" href="#" data-go="staff">See a sample plan</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>What you get</h2>
+      <p class="sub">An outcome, not a pile of tags. Tag counts are a ceiling, not the point.</p>
+      <div class="prices">
+        <div class="price">
+          <span class="eyebrow">Essentials</span>
+          <div class="amt">$297</div>
+          <ul>
+            <li>AI-assisted tag plan reviewed by a specialist</li>
+            <li>Your core conversion events built in GTM (up to 15 tags)</li>
+            <li>GA4 integration wired and verified</li>
+            <li>New workspace, you approve before we publish</li>
+          </ul>
+          <a class="btn block" href="#" data-go="start">Start Essentials</a>
+        </div>
+        <div class="price pro">
+          <span class="tag">Most chosen</span>
+          <span class="eyebrow">Pro</span>
+          <div class="amt">$597</div>
+          <ul>
+            <li>Everything in Essentials, up to 25 tags</li>
+            <li>Two custom GA4 Explorations built for your events</li>
+            <li>Legacy tag cleanup and Key Events marked</li>
+            <li>One 15-minute consult, email or Zoom</li>
+          </ul>
+          <a class="btn block" href="#" data-go="start">Start Pro</a>
+        </div>
+      </div>
+      <div class="addons">
+        <span class="addon">+ $75 &middot; We create your GTM account and hand it back</span>
+        <span class="addon">+ $75 &middot; We create your GA4 account and hand it back</span>
+        <span class="addon mono">Restart fee $49 if the 7-day approval window lapses</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>How it works</h2>
+      <p class="sub">You are in control at the one step that touches your live site.</p>
+      <div class="steps">
+        <div class="step"><div class="n">Step 1</div><h3>Pay and brief</h3><p>Pick a tier, pass a quick eligibility check, and tell us what to track.</p></div>
+        <div class="step"><div class="n">Step 2</div><h3>Share access</h3><p>Add our manager account to your GTM and GA4. A 2-minute video walks you through it.</p></div>
+        <div class="step"><div class="n">Step 3</div><h3>We recommend</h3><p>Within 2 business days you get a clear tag plan built in a new, isolated workspace.</p></div>
+        <div class="step"><div class="n">Step 4</div><h3>You approve</h3><p>Review the exact changes. Nothing publishes to your live site until you say go.</p></div>
+        <div class="step"><div class="n">Step 5</div><h3>We publish</h3><p>We publish the approved version, confirm it fires, and hand everything back.</p></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Common questions</h2>
+      <div class="faq">
+        <details open><summary>What counts as one tag?</summary><p>A single tag firing on one trigger using a standard template, for an event your site already sends to the dataLayer. Complex custom events that need new site code are quoted separately so you always know the scope.</p></details>
+        <details><summary>Do you edit my live site directly?</summary><p>No. We build in a separate GTM workspace and version. You approve the specific changes, then we publish. We export your current version first so there is always a rollback.</p></details>
+        <details><summary>What do you need from me?</summary><p>Edit access to your GTM container and GA4 property, added to our manager account, plus a working cookie consent banner if you collect personal data. That is it.</p></details>
+        <details><summary>When does the clock start?</summary><p>The 2-business-day window starts once access is confirmed and your intake is complete, not at payment.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GET STARTED -->
+<section class="screen" id="start" hidden>
+  <div class="wrap narrow">
+    <p class="screen-note">Screen 2 of 9 &middot; Pre-payment eligibility + hook. Eligible answers create a pending order and continue to Stripe Checkout. Ineligible answers show a friendly note and capture the email.</p>
+    <h2 style="font-size:1.8rem;margin-bottom:6px">Let's make sure this fits</h2>
+    <p class="sub" style="color:var(--muted);margin-bottom:22px">Two minutes. No charge until the end.</p>
+    <form class="card" onsubmit="return false">
+      <div class="grid2">
+        <div class="field"><label for="f-name">Your name</label><input id="f-name" value="Dana Ruiz"></div>
+        <div class="field"><label for="f-email">Work email</label><input id="f-email" type="email" value="dana@northbeamagency.com"></div>
+      </div>
+      <div class="field"><label for="f-url">Website to set up</label><input id="f-url" value="https://northbeamagency-client.com"></div>
+      <div class="field">
+        <label>Are you an agency buying for a client?</label>
+        <div class="seg">
+          <label><input type="radio" name="agency" checked> Yes, we're an agency</label>
+          <label><input type="radio" name="agency"> No, it's our own site</label>
+        </div>
+        <span class="hint">Agencies get a partner discount code after a short form.</span>
+      </div>
+      <fieldset class="field">
+        <label>Which do you already have? (we can create either for +$75)</label>
+        <div class="seg">
+          <label><input type="checkbox" checked> Google Tag Manager</label>
+          <label><input type="checkbox" checked> GA4 property</label>
+          <label><input type="checkbox" checked> Cookie consent banner</label>
+        </div>
+      </fieldset>
+      <div class="field"><label for="f-goal">What is the most important thing you want to track?</label><textarea id="f-goal">Qualified demo requests and completed checkout purchases, split by paid vs organic.</textarea></div>
+      <div class="field">
+        <label for="f-plan">Package</label>
+        <select id="f-plan"><option>Pro, $597</option><option>Essentials, $297</option></select>
+      </div>
+      <a class="btn block" href="#" data-go="status">Continue to secure checkout &rarr;</a>
+      <p class="hint" style="text-align:center;margin-top:12px">Payment is handled by Stripe. We never see your card details.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ORDER STATUS -->
+<section class="screen" id="status" hidden>
+  <div class="wrap narrow">
+    <p class="screen-note">Screen 3 of 9 &middot; Post-payment order status. The buyer's home base after paying: next steps, access instructions, links to intake and consent, and live status.</p>
+    <div class="status-head">
+      <div>
+        <span class="eyebrow">Order AA-1042 &middot; Pro</span>
+        <h2 style="font-size:1.7rem">Thanks, Dana. Two quick steps to start the clock.</h2>
+      </div>
+      <span class="pill warn"><span class="dot"></span>Waiting on access</span>
+    </div>
+    <div class="callout"><span class="pill">1</span><div><strong>Complete your intake.</strong> Tell us exactly what to track so the plan is right the first time. <a href="#" data-go="intake">Open intake &rarr;</a></div></div>
+    <div class="callout"><span class="pill">2</span><div><strong>Share access.</strong> Add <span class="mono">jlyticsconcierge@gmail.com</span> to your GTM container and GA4 property as an editor. <a href="#">Watch the 2-minute video &rarr;</a> Then <a href="#">mark access as shared</a>. You will sign a short authorization before we touch anything: <a href="#" data-go="consent">review it &rarr;</a></div></div>
+    <h3 style="margin:26px 0 14px">Your progress</h3>
+    <div class="track">
+      <div class="node done"><div class="mk">&check;</div><div><h3>Paid</h3><p>Sep 16, 2026. Receipt emailed.</p></div></div>
+      <div class="node now"><div class="mk">2</div><div><h3>Intake and access</h3><p>In progress. The 2-business-day clock starts when both are done.</p></div></div>
+      <div class="node"><div class="mk">3</div><div><h3>Recommendations</h3><p>We send your tag plan within 2 business days of access + intake.</p></div></div>
+      <div class="node"><div class="mk">4</div><div><h3>Your approval</h3><p>You review the exact changes. 7 days to approve.</p></div></div>
+      <div class="node"><div class="mk">5</div><div><h3>Published and delivered</h3><p>We publish, verify, and hand access back.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTAKE -->
+<section class="screen" id="intake" hidden>
+  <div class="wrap narrow">
+    <p class="screen-note">Screen 4 of 9 &middot; Post-payment intake. Captures the detail the plan needs. Marking access confirmed + submitting this starts the SLA clock.</p>
+    <h2 style="font-size:1.8rem;margin-bottom:6px">Project intake &middot; Order AA-1042</h2>
+    <p class="sub" style="color:var(--muted);margin-bottom:22px">The more specific you are, the sharper the plan.</p>
+    <form class="card" onsubmit="return false">
+      <div class="field"><label for="i-goals">Your goals for this setup</label><textarea id="i-goals">We spend on Google and Meta and cannot tell which channel drives real purchases. We want trustworthy purchase and lead tracking so we can shift budget with confidence.</textarea></div>
+      <div class="field"><label for="i-events">Events you want tracked</label><textarea id="i-events">1) Demo request form submit  2) Add to cart  3) Purchase (with value)  4) Newsletter signup  5) Phone-number click</textarea><span class="hint">List the actions that matter. We will confirm which already exist in your dataLayer.</span></div>
+      <div class="grid2">
+        <div class="field"><label for="i-cms">Website platform</label><select id="i-cms"><option>Shopify</option><option>WordPress</option><option>Webflow</option><option>Custom / other</option></select></div>
+        <div class="field"><label for="i-cmp">Consent banner (CMP)</label><select id="i-cmp"><option>Yes, active</option><option>No, not yet</option><option>Not sure</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="i-gtm">GTM container ID</label><input id="i-gtm" value="GTM-XXXXXXX" class="mono"></div>
+        <div class="field"><label for="i-ga4">GA4 measurement ID</label><input id="i-ga4" value="G-XXXXXXXXXX" class="mono"></div>
+      </div>
+      <fieldset class="field">
+        <label>Access</label>
+        <div class="seg"><label><input type="checkbox" checked> I have shared editor access with your manager account</label></div>
+      </fieldset>
+      <a class="btn block" href="#" data-go="status">Submit intake</a>
+    </form>
+  </div>
+</section>
+
+<!-- CONSENT -->
+<section class="screen" id="consent" hidden>
+  <div class="wrap narrow">
+    <p class="screen-note">Screen 5 of 9 &middot; Authorization + consent. Required before any change to a client property. Stores a versioned record with signer authority. v1 language is self-drafted, lawyer review required before public sale.</p>
+    <h2 style="font-size:1.8rem;margin-bottom:6px">Authorization to configure your Google properties</h2>
+    <p class="sub" style="color:var(--muted);margin-bottom:22px">Order AA-1042 &middot; version 2026-09</p>
+    <div class="card">
+      <div class="consent-box">
+        <p><strong>Scope.</strong> You authorize Ambient Array to access the Google Tag Manager container and GA4 property you have shared, to build tags, triggers, variables, and Explorations in a new workspace, and to publish an approved version to your live site once you approve the specific changes in writing.</p>
+        <p style="margin-top:10px"><strong>Your responsibilities.</strong> You confirm you are authorized to grant this access, that a functioning cookie consent mechanism is in place where required, and that you are responsible for your site's privacy policy and consent banner.</p>
+        <p style="margin-top:10px"><strong>Analytics accuracy and liability.</strong> Tag configuration depends on your site's existing code and data layer. Ambient Array is not liable for pre-existing issues, third-party tags, or data collected before this engagement, and total liability is limited to fees paid. We keep a rollback of your prior version.</p>
+        <p style="margin-top:10px"><strong>Data.</strong> We access your properties only to perform this work and remove our access on delivery. We do not sell or share your data.</p>
+      </div>
+      <fieldset class="field">
+        <div class="seg" style="flex-direction:column;align-items:stretch">
+          <label><input type="checkbox" checked> I am authorized to grant access to these Google properties.</label>
+          <label><input type="checkbox" checked> I have read and agree to the authorization above.</label>
+        </div>
+      </fieldset>
+      <div class="grid2">
+        <div class="field"><label for="c-name">Full name</label><input id="c-name" value="Dana Ruiz"></div>
+        <div class="field"><label for="c-role">Role</label><input id="c-role" value="Owner, Northbeam Agency"></div>
+      </div>
+      <a class="btn block" href="#" data-go="status">Agree and authorize</a>
+    </div>
+  </div>
+</section>
+
+<!-- STAFF -->
+<section class="screen" id="staff" hidden>
+  <div class="wrap">
+    <p class="screen-note">Screens 7-8 of 9 &middot; Staff dashboard + order detail. Internal. SLA timers, statuses, and the AI plan a specialist edits before sending.</p>
+    <div class="toolbar">
+      <h2 style="font-size:1.7rem">Orders</h2>
+      <div class="cta-row"><span class="pill">This week</span><a class="btn ghost" href="#">Export margin report</a></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="k">Open orders</div><div class="v">7</div></div>
+      <div class="stat"><div class="k">Due today (SLA)</div><div class="v" style="color:var(--warn)">2</div></div>
+      <div class="stat"><div class="k">Awaiting client approval</div><div class="v">3</div></div>
+      <div class="stat"><div class="k">Median labor / order</div><div class="v mono">1h 40m</div></div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Order</th><th>Tier</th><th>Status</th><th>SLA</th><th>Access</th><th>Labor</th></tr></thead>
+        <tbody>
+          <tr><td><span class="mono">AA-1042</span><br><span class="mono" style="color:var(--muted)">Northbeam</span></td><td>Pro</td><td><span class="pill warn"><span class="dot"></span>Waiting on access</span></td><td class="sla">not started</td><td><span class="pill">pending</span></td><td class="sla">&ndash;</td></tr>
+          <tr><td><span class="mono">AA-1041</span><br><span class="mono" style="color:var(--muted)">Cedar Dental</span></td><td>Essentials</td><td><span class="pill"><span class="dot"></span>Building plan</span></td><td class="sla" style="color:var(--warn)">1d 03h left</td><td><span class="pill good">verified</span></td><td class="sla">0h 45m</td></tr>
+          <tr><td><span class="mono">AA-1039</span><br><span class="mono" style="color:var(--muted)">Loop Fitness</span></td><td>Pro</td><td><span class="pill"><span class="dot"></span>Awaiting approval</span></td><td class="sla">recs sent</td><td><span class="pill good">verified</span></td><td class="sla">2h 10m</td></tr>
+          <tr><td><span class="mono">AA-1037</span><br><span class="mono" style="color:var(--muted)">Rivet B2B</span></td><td>Essentials</td><td><span class="pill crit"><span class="dot"></span>Restart due</span></td><td class="sla" style="color:var(--crit)">approval lapsed</td><td><span class="pill good">verified</span></td><td class="sla">1h 05m</td></tr>
+          <tr><td><span class="mono">AA-1035</span><br><span class="mono" style="color:var(--muted)">Harbor Law</span></td><td>Pro</td><td><span class="pill good"><span class="dot"></span>Delivered</span></td><td class="sla">done</td><td><span class="pill">removed</span></td><td class="sla">3h 20m</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="detail">
+      <div class="toolbar" style="margin:10px 0 0"><h3 style="font-size:1.2rem">AA-1042 &middot; Northbeam &middot; Pro</h3><span class="pill warn"><span class="dot"></span>Waiting on access</span></div>
+      <div class="panelgrid">
+        <div class="card">
+          <div class="toolbar" style="margin-bottom:12px"><strong>AI tag plan</strong><span class="pill">draft &middot; review before sending</span></div>
+          <div class="plan-item"><span>Purchase (GA4 event, value + currency)</span><span class="pill good">dataLayer ok</span></div>
+          <div class="plan-item"><span>Demo request (form_submit trigger)</span><span class="pill good">dataLayer ok</span></div>
+          <div class="plan-item"><span>Add to cart (GA4 event)</span><span class="pill warn">needs dataLayer</span></div>
+          <div class="plan-item"><span>Phone click (auto event, click URL)</span><span class="pill good">standard</span></div>
+          <div class="plan-item"><span>Legacy Universal Analytics tag</span><span class="pill crit">recommend remove</span></div>
+          <div class="cta-row" style="margin-top:16px"><a class="btn" href="#">Regenerate</a><a class="btn ghost" href="#">Edit plan</a><a class="btn ghost" href="#">Send to client</a></div>
+        </div>
+        <div class="card">
+          <strong>Order facts</strong>
+          <div class="plan-item"><span>Website</span><span class="mono">northbeam...client.com</span></div>
+          <div class="plan-item"><span>Consent captured</span><span class="pill good">yes, 2026-09</span></div>
+          <div class="plan-item"><span>CMP present</span><span class="pill good">yes</span></div>
+          <div class="plan-item"><span>Access</span><span class="pill warn">pending verify</span></div>
+          <div class="plan-item"><span>Add-ons</span><span>none</span></div>
+          <div class="plan-item"><span>Labor logged</span><span class="mono">0h 25m</span></div>
+          <div class="cta-row" style="margin-top:14px"><a class="btn ghost" href="#">Verify access</a><a class="btn ghost" href="#">Log time</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="foot">Ambient Array &middot; Google Ecosystem Setup &middot; interactive mockup, example data only</div>
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var screens=[].slice.call(document.querySelectorAll('.screen'));
+  function show(id){
+    screens.forEach(function(s){s.hidden = s.id!==id;});
+    tabs.forEach(function(t){t.setAttribute('aria-selected', String(t.dataset.s===id));});
+    window.scrollTo({top:0,behavior:'instant' in window? 'instant':'auto'});
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.s);});});
+  document.addEventListener('click',function(e){
+    var go=e.target.closest('[data-go]'); if(!go) return;
+    e.preventDefault(); show(go.getAttribute('data-go'));
+  });
+})();
+</script>
+
+</body>
+</html>
